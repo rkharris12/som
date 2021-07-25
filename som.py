@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 def gen_som(X, SOMsize):
   (N, d) = X.shape
@@ -9,36 +10,40 @@ def gen_som(X, SOMsize):
   Wnew = np.random.rand(n, m) * 255
   for i in range(m):
     Wnew[:,i] = Wnew[:,i] / np.linalg.norm(Wnew[:,i])
-  winningNodes = []
+  winningNodes = set()
   error = np.Inf
   tolerance = 10e-8
   eta = 0.9
   sigma = SOMsize / 5
-  alpha = 0.99
+  alpha = 0.999
   iter = 0
-
-  while error>tolerance and eta>0.1 and sigma>1:
+  a = np.zeros((SOMsize, SOMsize))
+  Wold = np.zeros((n, m))
+  p = np.zeros((SOMsize, SOMsize, 2))
+  for i in range(SOMsize):
+    for j in range(SOMsize):
+      p[i,j] = [i, j]
+  d = np.zeros((SOMsize, SOMsize, 2))
+  u = np.zeros((SOMsize, SOMsize, 2))
+  m = np.zeros((SOMsize,SOMsize,3))
+  while error>tolerance and eta>0.01 and sigma>1:
     iter = iter+1
     Wold = np.copy(Wnew)
     i = random.randint(0, N-1)
-    xtrain = np.transpose(X[i,:])
-    xtrain = xtrain / np.linalg.norm(xtrain)
-    a = np.zeros((SOMsize, SOMsize))
-    for i in range(SOMsize):
-      for j in range(SOMsize):
-        a[i,j] = np.matmul(np.transpose(Wold[:,(SOMsize*i+j)]), xtrain)
+    xtrain = X[i,:] / np.linalg.norm(X[i,:])
+    a = (np.matmul(xtrain, Wold)).reshape((SOMsize, SOMsize))
     [row, col] = np.unravel_index(np.argmax(a), a.shape)
-    winningNodes.append((row, col))
-    for i in range(SOMsize):
-      for j in range(SOMsize):
-        d = np.linalg.norm(np.asarray([i, j]) - np.asarray([row, col]))
-        u = np.exp((-1) * (d**2) / (2*(sigma**2)))
-        Wnew[:,(SOMsize*(i)+j)] = Wold[:,(SOMsize*(i)+j)]+u*eta*(xtrain-Wold[:,(SOMsize*(i)+j)])
-        Wnew[:,SOMsize*(i)+j] = Wnew[:,SOMsize*(i)+j] / np.linalg.norm(Wnew[:,SOMsize*(i)+j])
+    winningNodes.add((row, col))
+    d = np.linalg.norm((p - np.asarray([row, col])), axis=2)
+    u = np.exp((-1) * (d**2) / (2*(sigma**2)))
+    Wnew = Wold + (eta*(u.flatten())) * (xtrain.reshape(3,1) - Wold)
+    Wnew = Wnew / np.linalg.norm(Wnew, axis=0)
     eta = eta*alpha
     sigma = sigma*alpha 
     error = np.linalg.norm(Wnew[:,(SOMsize*(row)+col)] - Wold[:,(SOMsize*(row)+col)])
-  m = np.zeros((SOMsize,SOMsize,3))
+  print("error: %f" % error)
+  print("eta: %f" % eta)
+  print("sigma: %f" % sigma)
   for i in range(n):
     m[:,:,i] = (Wnew[i,:]).reshape((SOMsize, SOMsize))
   print('that took ' + str(iter) + ' iterations')
@@ -70,6 +75,8 @@ def plot_som(som, winningNodes):
   plt.imshow(som)
   plt.show()
 
+start = time.time()
+
 ROWS = 8
 SOMsize = 1000
 
@@ -77,9 +84,10 @@ input = get_som_input(ROWS)
 # print(input)
 
 som, winningNodes = gen_som(input, SOMsize)
+# print(len(winningNodes))
+
+end = time.time()
+print("runtime: %f" % (end - start))
 
 plot_som(som, winningNodes)
-
 # print(som)
-
-
