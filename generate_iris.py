@@ -103,6 +103,10 @@ def get_som_input(N):
   return filtered
 
 def plot_som(som, winningNodes):
+  plot2 = plt.figure(1)
+  plt.imshow(som)
+  plt.savefig("iris_som.png")
+
   rows, cols, features = som.shape
   # winningPlot = np.zeros((rows, cols, 3))
   print('len = ' + str(len(winningNodes)))
@@ -119,9 +123,10 @@ def plot_som(som, winningNodes):
   # plot1 = plt.figure(1)
   # plt.imshow(winningPlot)
 
-  plot2 = plt.figure(1)
+  plot2 = plt.figure(2)
   plt.imshow(som)
-  plt.show()
+  plt.savefig("iris_som_overlay.png")
+  #plt.show()
 
 def get_input():
   filename = "iris.data"
