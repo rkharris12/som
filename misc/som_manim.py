@@ -749,3 +749,18 @@ class SomAlgorithm(ThreeDScene):
             if c%(2*squares_per_side_div_2) == 0:
                 self.wait(0.5)
         self.wait(3)
+
+
+
+class SomAnimation3(Scene):
+  def construct(self):
+    shift_amt = 4.8
+    scale_amt = 1.2
+    for i in range(0,439):
+      if i == 0:
+        self.play(FadeIn(ImageMobject("animation2/winners_16_100_3_"+str(i)+".png").scale(scale_amt).shift(0.0*LEFT)), FadeIn(ImageMobject("animation2/colors_16_100_3_"+str(i)+".png").scale(scale_amt).shift(shift_amt*LEFT)))
+      elif i == 1:
+        self.play(FadeOut(ImageMobject("animation2/winners_16_100_3_"+str(i-1)+".png").scale(scale_amt).shift(0.0*LEFT)), FadeOut(ImageMobject("animation2/colors_16_100_3_"+str(i-1)+".png").scale(scale_amt).shift(shift_amt*LEFT)), FadeIn(ImageMobject("animation2/winners_16_100_3_"+str(i)+".png").scale(scale_amt).shift(0.0*LEFT)), FadeIn(ImageMobject("animation2/changes_16_100_3_"+str(i)+".png").scale(scale_amt).shift(shift_amt*RIGHT)), FadeIn(ImageMobject("animation2/colors_16_100_3_"+str(i)+".png").scale(scale_amt).shift(shift_amt*LEFT)))
+      else:
+        self.play(FadeOut(ImageMobject("animation2/winners_16_100_3_"+str(i-1)+".png").scale(scale_amt).shift(0.0*LEFT)), FadeOut(ImageMobject("animation2/changes_16_100_3_"+str(i-1)+".png").scale(scale_amt).shift(shift_amt*RIGHT)), FadeOut(ImageMobject("animation2/colors_16_100_3_"+str(i-1)+".png").scale(scale_amt).shift(shift_amt*LEFT)), FadeIn(ImageMobject("animation2/winners_16_100_3_"+str(i)+".png").scale(scale_amt).shift(0.0*LEFT)), FadeIn(ImageMobject("animation2/changes_16_100_3_"+str(i)+".png").scale(scale_amt).shift(shift_amt*RIGHT)), FadeIn(ImageMobject("animation2/colors_16_100_3_"+str(i)+".png").scale(scale_amt).shift(shift_amt*LEFT)))
+
